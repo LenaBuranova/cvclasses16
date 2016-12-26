@@ -18,24 +18,36 @@
     <ClInclude Include="stdafx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="IObjectTracking.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectTrackingLK.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectTrackingTK.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectTrackingSTK.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="watershed.cpp">
+    <ClCompile Include="lesson7.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="IObjectTracking.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="gmm.cpp">
+    <ClCompile Include="ObjectTrackingLK.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="kmeans.cpp">
+    <ClCompile Include="ObjectTrackingTK.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="otsuthreshold.cpp">
+    <ClCompile Include="ObjectTrackingSTK.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -17,6 +17,7 @@ using namespace std;
 
 string fileName;
 
+<<<<<<< HEAD
 
 static void help()
 {
@@ -29,11 +30,44 @@ static void help()
 		"\tw or SPACE - run watershed segmentation algorithm\n"
 		"\t\t(before running it, *roughly* mark the areas to segment on the image)\n"
 		"\t  (before that, roughly outline several markers on the image)\n";
+=======
+size_t numberOfPoints = 0;
+
+Mat image;
+Mat imageColor;
+vector<Point> clickCoord; //не забыть очистить это всё и создать функцию для этого
+
+void CallBackFunc(int event, int x, int y, int flags, void* userdata)
+{
+	if (event == EVENT_LBUTTONDOWN)
+	{
+		circle(imageColor, Point(x, y), 1, Scalar(255, 0, 0), 3);
+		imshow("original", imageColor);
+		clickCoord.push_back(Point(x, y));
+		numberOfPoints++;
+	}
+
+}
+
+static void help()
+{
+	cout << "\nThis program demonstrates algorithm of Gabor filter for textures\n";
+	cout << "Hot keys: \n"
+		"\tESC or 'Q', 'q'- quit the program\n"
+		"\t'R', 'r' - restore the original image\n"
+		"\t'N', 'n' or SPACE - run gabor filter for texture segmentation algorithm\n"
+		"\t\t(after running it, mark the areas of cluster centers on the image)\n";
+		
+>>>>>>> updata/master
 }
 
 cv::Mat showHist(Mat &gray)
 {
+<<<<<<< HEAD
 		// Initialize parameters
+=======
+	// Initialize parameters
+>>>>>>> updata/master
 	int histSize = 256;    // bin size
 	float range[] = { 0, 255 };
 	const float *ranges[] = { range };
@@ -47,8 +81,13 @@ cv::Mat showHist(Mat &gray)
 	total = gray.rows * gray.cols;
 	/*for (int h = 0; h < histSize; h++)
 	{
+<<<<<<< HEAD
 		float binVal = hist.at<float>(h);
 		cout << " " << binVal;
+=======
+	float binVal = hist.at<float>(h);
+	cout << " " << binVal;
+>>>>>>> updata/master
 	}*/
 
 	// Plot the histogram
@@ -65,9 +104,15 @@ cv::Mat showHist(Mat &gray)
 			Scalar(255, 0, 0), 2, 8, 0);
 	}
 
+<<<<<<< HEAD
 	  //imshow(String("Result") + imageName, histImage);
 	  return histImage;
 	
+=======
+	//imshow(String("Result") + imageName, histImage);
+	return histImage;
+
+>>>>>>> updata/master
 }
 enum ConvolutionType
 {
@@ -92,6 +137,7 @@ void conv2(const Mat &img, const Mat& kernel, /*ConvolutionType type,*/ Mat& des
 	int borderMode = BORDER_CONSTANT;
 	Mat temp;
 	flip(kernel, temp, 1);
+<<<<<<< HEAD
 	filter2D(source, dest, img.depth(), temp, anchor, 0, borderMode);
 
 	/*if (CONVOLUTION_VALID == type)
@@ -107,6 +153,23 @@ void  gabor2(Mat &image, Mat &imageGaborFilter, double gamma, double lambda, int
 	int ks = Sy * 2 + 1;
 	Mat kernel(ks, ks, CV_32F);
 	
+=======
+	Mat tempDest;
+	filter2D(source, tempDest, img.depth(), temp, anchor, 0, borderMode);
+	dest = tempDest(Rect(10, 10, tempDest.rows - 20, tempDest.cols - 20));
+	//if (CONVOLUTION_VALID == type)
+	//{
+	//dest = dest.colRange((kernel.cols - 1) / 2, dest.cols - kernel.cols / 2).rowRange((kernel.rows - 1) / 2, dest.rows - kernel.rows / 2);
+	//}
+}
+void  gabor2(Mat &image, Mat &imageGaborFilter, double gamma, double lambda, int b, double theta, double phi)
+{
+	double sigma = (1. / CV_PI) * sqrt(log(2) / 2) * (double(1 << b) + 1) / ((double)(1 << b) - 1) * lambda;
+	int Sy = trunc(sigma * gamma);
+	int ks = Sy * 2 + 1;
+	Mat kernel(ks, ks, CV_32F);
+
+>>>>>>> updata/master
 	for (int x = -trunc(sigma); x <= trunc(sigma); x++) {//здесь изменила
 		for (int y = -Sy; y <= Sy; y++) {//здесь ихменила
 			double xp = (double)x * cos(theta) + (double)y * sin(theta);
@@ -115,7 +178,11 @@ void  gabor2(Mat &image, Mat &imageGaborFilter, double gamma, double lambda, int
 				pow(gamma * yp, 2)) / pow(sigma, 2)) * cos(2 * CV_PI * xp / lambda + phi);
 		}
 	}
+<<<<<<< HEAD
 	
+=======
+
+>>>>>>> updata/master
 	conv2(image, kernel, /*ConvolutionType type,*/ imageGaborFilter);
 }
 cv::Mat gauss2(Mat &image, double sigma)
@@ -161,6 +228,7 @@ cv::Mat eucdist2(Mat &X, Mat &Y)
 	Mat d = x2u + vy2 - xyt;
 	return d;
 }
+<<<<<<< HEAD
 void kmeans_light(Mat &dataCluster, Mat &codebook, Mat &data, size_t K)
 {
 	double stopIter = 0.05;
@@ -174,17 +242,51 @@ void kmeans_light(Mat &dataCluster, Mat &codebook, Mat &data, size_t K)
 		codebook.at<float>(i) = data.at<float>(k);
 	}
 	
+=======
+void kmeans_light(Mat &dataCluster, /*Mat &codebook,*/ Mat &data, Point sizeImage/*, size_t K*/)
+{
+	double stopIter = 0.05;
+	Mat codebook;/* (K, 1, CV_32F);*/
+
+	//Initial codebook
+	if (numberOfPoints == 0){
+		numberOfPoints = 5;
+		Mat codebookLock(numberOfPoints, 1, CV_32F);
+		srand(time(NULL));
+		for (int i = 0; i < numberOfPoints; i++){
+			int k = rand() % data.rows;
+			codebookLock.at<float>(i) = data.at<float>(k);
+		}
+		codebookLock.copyTo(codebook);
+	}
+	else{
+		Mat codebookLock(numberOfPoints, 1, CV_32F);
+		for (int i = 0; i < numberOfPoints; i++){
+			Point indx = clickCoord[i];
+			codebookLock.at<float>(i) = data.at<float>(indx.x + sizeImage.x * indx.y);
+		}
+		codebookLock.copyTo(codebook);
+	}
+>>>>>>> updata/master
 	
 	float improvedRatio = INFINITY;
 	float distortion = INFINITY;
 	int iter = 0;
 
 	float old_distortion;
+<<<<<<< HEAD
 	
 	Mat dataNearClaserDist(data.rows, 1, CV_32F);
 	//Mat dataCluster(data.rows, 1, CV_32F);
 
 	
+=======
+
+	Mat dataNearClaserDist(data.rows, 1, CV_32F);
+	//Mat dataCluster(data.rows, 1, CV_32F);
+
+
+>>>>>>> updata/master
 	while (true){
 		//calculate euclidean distances between each sample and each codeword
 		Mat d = eucdist2(data, codebook);
@@ -192,7 +294,11 @@ void kmeans_light(Mat &dataCluster, Mat &codebook, Mat &data, size_t K)
 		//выбираем наименьшее число в каждой строке
 		for (int i = 0; i < d.rows; i++){
 			float min_val = INFINITY;
+<<<<<<< HEAD
 			for (int j = 0; j < K; j++){
+=======
+			for (int j = 0; j < numberOfPoints; j++){
+>>>>>>> updata/master
 				if (min_val > d.at<float>(i, j))
 				{
 					min_val = d.at<float>(i, j);
@@ -202,7 +308,11 @@ void kmeans_light(Mat &dataCluster, Mat &codebook, Mat &data, size_t K)
 			dataNearClaserDist.at<float>(i) = min_val;
 		}
 		//distortion.If centroids are unchanged, distortion is also unchanged.
+<<<<<<< HEAD
 	    //smaller distortion is better
+=======
+		//smaller distortion is better
+>>>>>>> updata/master
 		old_distortion = distortion;
 		distortion = 0;
 		for (int i = 0; i < dataNearClaserDist.rows; i++)
@@ -216,7 +326,11 @@ void kmeans_light(Mat &dataCluster, Mat &codebook, Mat &data, size_t K)
 		if (improvedRatio <= stopIter)
 			break;
 		// Renew codebook
+<<<<<<< HEAD
 		for (int i = 0; i < K; i++){
+=======
+		for (int i = 0; i < numberOfPoints; i++){
+>>>>>>> updata/master
 			std::vector<int> idx;
 			int sizrvec = 0;
 			for (int j = 0; j < dataNearClaserDist.rows; j++){
@@ -227,7 +341,11 @@ void kmeans_light(Mat &dataCluster, Mat &codebook, Mat &data, size_t K)
 			}
 			if (idx.empty())
 				continue;
+<<<<<<< HEAD
 			
+=======
+
+>>>>>>> updata/master
 			for (int k = 0; k < sizrvec; k++)
 			{
 				codebook.at<float>(i) += data.at<float>(idx[k]);
@@ -239,6 +357,10 @@ void kmeans_light(Mat &dataCluster, Mat &codebook, Mat &data, size_t K)
 }
 int gabortexture(int argc, char** argv)
 {
+<<<<<<< HEAD
+=======
+	help();
+>>>>>>> updata/master
 	while (true){
 		char key;
 		Mat hist;
@@ -249,14 +371,29 @@ int gabortexture(int argc, char** argv)
 		if (argc == 2) {
 			fileName = argv[1];
 		}
+<<<<<<< HEAD
 		Mat image = imread(fileName, CV_LOAD_IMAGE_GRAYSCALE);
+=======
+		image = imread(fileName, CV_LOAD_IMAGE_GRAYSCALE);
+>>>>>>> updata/master
 		if (image.empty())
 		{
 			cout << "Couldn'g open image " << fileName << ". Usage: gabortexture <image_name>\n";
 			return 0;
 		}
+<<<<<<< HEAD
 		namedWindow("original", WINDOW_NORMAL);
 		imshow("original", image);
+=======
+		cvtColor(image, imageColor, CV_GRAY2BGR);
+		hist = showHist(image);
+		imwrite("Historgamma image.jpg", hist);
+		imshow("Historgamma image", hist);
+
+		namedWindow("original", WINDOW_NORMAL);
+		imshow("original", imageColor);
+		setMouseCallback("original", CallBackFunc, NULL);
+>>>>>>> updata/master
 		key = (char)cv::waitKey();
 		switch (key){
 		case 27:
@@ -275,6 +412,11 @@ int gabortexture(int argc, char** argv)
 		case 'R':
 		default:
 			std::cout << "Demonstration restored." << std::endl;
+<<<<<<< HEAD
+=======
+			numberOfPoints = 0;
+			clickCoord.clear();
+>>>>>>> updata/master
 			continue;
 		}
 
@@ -295,7 +437,10 @@ int gabortexture(int argc, char** argv)
 		gabor2(image, imageGaborFilter, gamma, lambda, b, theta, phi);
 		endSum += clock() - start;
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> updata/master
 		//Сглаживание изображения к которому применили фильтр Габора
 		double minVal;
 		double maxVal;
@@ -319,7 +464,10 @@ int gabortexture(int argc, char** argv)
 			}
 		}
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> updata/master
 		minVal = 0;
 		maxVal = 0;
 		minMaxLoc(imageGaborFilter, &minVal, NULL, NULL, NULL);
@@ -337,7 +485,11 @@ int gabortexture(int argc, char** argv)
 		Mat imGabFilter;
 		imageGaborFilter.convertTo(imGabFilter, CV_8U, 255.0);
 		imwrite(fileName + String("Image Gabor.jpg"), imGabFilter);
+<<<<<<< HEAD
 		
+=======
+
+>>>>>>> updata/master
 		hist = showHist(imGabFilter);
 		imwrite("Historgamma image Gabor.jpg", hist);
 		imshow("Historgamma image Gabor", hist);
@@ -358,6 +510,11 @@ int gabortexture(int argc, char** argv)
 		case 'R':
 		default:
 			std::cout << "Demonstration restored." << std::endl;
+<<<<<<< HEAD
+=======
+			numberOfPoints = 0;
+			clickCoord.clear();
+>>>>>>> updata/master
 			cv::destroyWindow("original");
 			cv::destroyWindow("image Gabor");
 			cv::destroyWindow("image blur");
@@ -385,12 +542,21 @@ int gabortexture(int argc, char** argv)
 		imshow("image blur", imageGaborFilterBlur);
 		Mat imGabFilterBlur;
 		imageGaborFilterBlur.convertTo(imGabFilterBlur, CV_8U, 255.0);
+<<<<<<< HEAD
 		
 		
 		hist = showHist(imGabFilterBlur);
 		imwrite("Historgamma image Gabor Blur.jpg", hist);
 		imshow("Historgamma image Gabor Blur", hist);
 		
+=======
+
+
+		hist = showHist(imGabFilterBlur);
+		imwrite("Historgamma image Gabor Blur.jpg", hist);
+		imshow("Historgamma image Gabor Blur", hist);
+
+>>>>>>> updata/master
 		imwrite(fileName + String("Image Gabor Blur.jpg"), imGabFilterBlur);
 
 		key = (char)cv::waitKey();
@@ -409,12 +575,21 @@ int gabortexture(int argc, char** argv)
 		case 'R':
 		default:
 			std::cout << "Demonstration restored." << std::endl;
+<<<<<<< HEAD
+=======
+			numberOfPoints = 0;
+			clickCoord.clear();
+>>>>>>> updata/master
 			cv::destroyWindow("original");
 			cv::destroyWindow("image Gabor");
 			cv::destroyWindow("image blur");
 			cv::destroyWindow("clustered image");
 			cv::destroyWindow("Historgamma image Gabor Blur");
 			cv::destroyWindow("Historgamma image Gabor");
+<<<<<<< HEAD
+=======
+
+>>>>>>> updata/master
 			continue;
 		}
 
@@ -426,11 +601,19 @@ int gabortexture(int argc, char** argv)
 			}
 		}
 
+<<<<<<< HEAD
 		int K = 5;
 		Mat codebook(K, 1, CV_32F);
 		Mat dataCluster(data.rows, 1, CV_32S);
 		start = clock();
 		kmeans_light(dataCluster, codebook, data, K);
+=======
+
+
+		Mat dataCluster(data.rows, 1, CV_32S);
+		start = clock();
+		kmeans_light(dataCluster, /*codebook,*/ data, Point(imageGaborFilterBlur.rows, imageGaborFilterBlur.cols)/*, K*/);
+>>>>>>> updata/master
 
 
 		//Из dataCluster делаем трёхканальное изображение размера image 
@@ -457,7 +640,11 @@ int gabortexture(int argc, char** argv)
 		namedWindow("clustered image", WINDOW_NORMAL);
 		imshow("clustered image", seg);
 
+<<<<<<< HEAD
 		
+=======
+
+>>>>>>> updata/master
 		Mat segsave;
 		seg.convertTo(segsave, CV_8U, 255.0);
 
@@ -476,6 +663,11 @@ int gabortexture(int argc, char** argv)
 		case 'R':
 		default:
 			std::cout << "Demonstration restored." << std::endl;
+<<<<<<< HEAD
+=======
+			numberOfPoints = 0;
+			clickCoord.clear();
+>>>>>>> updata/master
 			cv::destroyWindow("original");
 			cv::destroyWindow("image Gabor");
 			cv::destroyWindow("image blur");
