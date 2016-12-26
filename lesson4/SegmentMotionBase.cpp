@@ -19,7 +19,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 void SegmentMotionBase::Run()
 {
-    cv::VideoCapture capture(0);
+	cv::VideoCapture capture(".\\MM\\ImageWithObject.avi");
+	//cv::VideoCapture capture(0);
 
     if (!capture.isOpened())
     {
@@ -29,7 +30,7 @@ void SegmentMotionBase::Run()
 
     createGUI();
 
-    while (true)
+	while (capture.get(CV_CAP_PROP_POS_MSEC) < 23000)
     {
         m_foreground = process(capture);
         cv::imshow(GetName(), m_foreground);

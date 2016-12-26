@@ -44,7 +44,7 @@ protected:
 
     ///@brief Apply the algorthm of background subtraction
     ///@return the result binary image
-    virtual cv::Mat process(cv::VideoCapture& capture) 
+	virtual cv::Mat process(cv::VideoCapture& capture)
     { 
         return cv::Mat();
     }

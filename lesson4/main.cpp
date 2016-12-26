@@ -4,19 +4,28 @@
 ///@Author: Vitaliy Baldeev
 ///@Date: 01 October 2015
 
+
 #include <iostream>
 #include <memory>
 #include <list>
+
+#include <opencv2/opencv.hpp>
+#include <String>
 
 #include "SegmentMotionDiff.h"
 #include "SegmentMotionBU.h"
 #include "SegmentMotionGMM.h"
 #include "SegmentMotion1G.h"
 
+
+using namespace cv;
 void ViBeDemo();
+void calcMM();
+double countingTruePixels(Mat &image);
 
 int main()
 {
+	//calcMM(/*VideoCapture & capture*/);
     std::cout << "Select the algorithm: \n"
         << "Diff  - Basic difference \n"
         << "BU    - Basic difference with background updating \n"

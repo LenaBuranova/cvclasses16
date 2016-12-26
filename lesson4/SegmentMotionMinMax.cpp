@@ -34,7 +34,7 @@ cv::Mat SegmentMotionMinMax::process(cv::VideoCapture& capture)
     {
         while (m_frameBuffer.size() > m_params.historySize)
         {
-            m_frameBuffer.pop_front();
+            m_frameBuffer.pop_front();// удаляем первый элемент
         }
     }
 
@@ -46,7 +46,7 @@ cv::Mat SegmentMotionMinMax::process(cv::VideoCapture& capture)
     // Calculate min, max, and D
     m_minMat = cv::Mat_<float>(frame.rows, frame.cols, 255.0);
     m_maxMat = cv::Mat_<float>(frame.rows, frame.cols, 0.0);
-    m_Dmat = cv::Mat_<float>(frame.rows, frame.cols, 20.0);
+    m_Dmat = cv::Mat_<float>(frame.rows, frame.cols, 5.0);
     
     for (int i = 0; i < frame.rows; i++)
     {
@@ -107,14 +107,15 @@ cv::Mat SegmentMotionMinMax::process(cv::VideoCapture& capture)
 
     // Detect foreground
     cv::Mat result(frame.rows, frame.cols, CV_8UC1);
+	std::cout << "0.004 * median = "<<0.004 * median <<std:: endl;
     for (int i = 0; i < frame.rows; i++)
     {
         for (int j = 0; j < frame.cols; j++)
         {
             if (abs(m_maxMat(i, j) - static_cast<float>(frame.at<uchar>(i, j))) <
-                static_cast<float>(m_params.tau) / 100 * median ||
+				static_cast<float>(m_params.tau) / 100 * median ||
                 abs(m_minMat(i, j) - static_cast<float>(frame.at<uchar>(i, j))) <
-                static_cast<float>(m_params.tau) / 100 * median)
+				static_cast<float>(m_params.tau) / 100 * median)
             {
                 result.at<uchar>(i, j) = static_cast<uchar>(0);
             }
@@ -124,9 +125,10 @@ cv::Mat SegmentMotionMinMax::process(cv::VideoCapture& capture)
             }
         }
     }
-
     return result;
 }
+
+
 
 ///////////////////////////////////////////////////////////////////////////////
 void SegmentMotionMinMax::createGUI()
